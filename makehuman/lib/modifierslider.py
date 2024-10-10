@@ -55,6 +55,8 @@ class ModifierSlider(gui.Slider):
                 label = tlabel
             label = ' '.join([word.capitalize() for word in label])
 
+        label += self.appendValueLabel(modifier)
+
         if image is None:
             tlabel = modifier.name.replace('|', '-').split('-')
             # Guess a suitable image path from target name
@@ -73,6 +75,9 @@ class ModifierSlider(gui.Slider):
         else:
             self.view = None
 
+    @staticmethod
+    def appendValueLabel(modifier):
+        return f" ({str(modifier.getValue())[0:4]})"
 
     @staticmethod
     def findImage(name):
@@ -160,6 +165,9 @@ class ModifierSlider(gui.Slider):
             # Perform the action without adding it to the undo stack
             action.do()
 
+        labelOriginalText = self.label.text().split(" (")[0]
+        self.label.setText(labelOriginalText + self.appendValueLabel(self.modifier))
+
         if human.isSubdivided():
             if human.isProxied():
                 human.getProxyMesh().setVisibility(0)
@@ -184,5 +192,7 @@ class ModifierSlider(gui.Slider):
         if not self.slider.isSliderDown():
             # Only update slider position when it is not being clicked or dragged
             self.setValue(self.modifier.getValue())
+            labelOriginalText = self.label.text().split(" (")[0]
+            self.label.setText(labelOriginalText + self.appendValueLabel(self.modifier))
         self.blockSignals(False)
 
